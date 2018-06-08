@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andremw/cielo-braspag.git"
+    "url": "git+https://github.com/Upply/cielo-braspag.git"
   },
   "keywords": [
     "cielo",
@@ -26,9 +26,9 @@
   "author": "André Mazoni <mazoni.andre@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andremw/cielo-braspag/issues"
+    "url": "https://github.com/Upply/cielo-braspag/issues"
   },
-  "homepage": "https://andremw.github.io/cielo-braspag/",
+  "homepage": "https://upply.github.io/cielo-braspag/",
   "devDependencies": {
     "jest": "^23.1.0",
     "nock": "^9.3.2"
