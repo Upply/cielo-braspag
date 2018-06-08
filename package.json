@@ -1,5 +1,5 @@
 {
-  "name": "cielo-braspag",
+  "name": "@upply/cielo-braspag",
   "version": "0.0.1",
   "description": "Client para a API 3.0 da Cielo/Braspag em node.js",
   "main": "src/index",
