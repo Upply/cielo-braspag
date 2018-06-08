@@ -1,19 +1,20 @@
 {
-  "name": "cielo",
-  "version": "1.0.6",
-  "description": "Client para a API 3.0 da Cielo em node.js",
-  "main": "cielo.js",
+  "name": "cielo-braspag",
+  "version": "0.0.1",
+  "description": "Client para a API 3.0 da Cielo/Braspag em node.js",
+  "main": "src/index",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch --verbose --bail"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/banzeh/cielo.git"
+    "url": "git+https://github.com/andremw/cielo-braspag.git"
   },
   "keywords": [
     "cielo",
     "braspag",
+    "split-payment",
     "cartao",
     "credito",
     "debito",
@@ -22,15 +23,12 @@
     "pagamento",
     "pay"
   ],
-  "author": "Flavio Takeuchi <flavio@banzeh.com.br>",
-  "contributors": [
-    "André Mazoni <mazoni.andre@gmail.com>"
-  ],
+  "author": "André Mazoni <mazoni.andre@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/banzeh/cielo/issues"
+    "url": "https://github.com/andremw/cielo-braspag/issues"
   },
-  "homepage": "https://banzeh.github.io/cielo/",
+  "homepage": "https://andremw.github.io/cielo-braspag/",
   "devDependencies": {
     "jest": "^23.1.0",
     "nock": "^9.3.2"
