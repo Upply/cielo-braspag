@@ -1,7 +1,7 @@
 {
   "name": "@upply/cielo-braspag",
   "version": "0.0.1",
-  "description": "Client para a API 3.0 da Cielo/Braspag em node.js",
+  "description": "Wrapper for Cielo API / Braspag Middleware",
   "main": "src/index",
   "scripts": {
     "test": "jest",
