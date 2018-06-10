@@ -23,6 +23,10 @@ module.exports = (config) => {
   });
 
   return {
+    use: (middleware) => {
+      getInstance.interceptors.request.use(middleware);
+      postInstance.interceptors.request.use(middleware);
+    },
     cards: {
       tokenizeCard: card => postInstance.post('/1/card', {
         CustomerName: card.customerName,
