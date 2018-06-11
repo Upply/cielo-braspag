@@ -1,4 +1,5 @@
 const axios = require('axios');
+const querystring = require('querystring');
 
 const SERVER_URL = 'https://authsandbox.braspag.com.br';
 
@@ -16,9 +17,11 @@ module.exports = (config) => {
     },
   });
 
-  const renewToken = () => oauth2ServerInstance.post('/oauth2/token', { grant_type: 'client_credentials' }).then((response) => {
-    token = response.data.access_token;
-  });
+  const renewToken = () => oauth2ServerInstance
+    .post('/oauth2/token', querystring.stringify({ grant_type: 'client_credentials' }))
+    .then((response) => {
+      token = response.data.access_token;
+    });
 
   const mutateConfig = (requestConfig) => {
     requestConfig.headers.common.Authorization = `Bearer ${token}`;
