@@ -2,7 +2,7 @@ const nock = require('nock');
 const axios = require('axios');
 const httpAdapter = require('axios/lib/adapters/http');
 
-const cieloFactory = require('./index');
+const cieloFactory = require('./cielo');
 const braspagFactory = require('./braspag');
 
 const host = 'http://localhost';

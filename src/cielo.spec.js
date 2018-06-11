@@ -2,7 +2,7 @@ const nock = require('nock');
 const axios = require('axios');
 const httpAdapter = require('axios/lib/adapters/http');
 
-const factory = require('./index');
+const factory = require('./cielo');
 
 const host = 'http://localhost';
 axios.defaults.host = host;

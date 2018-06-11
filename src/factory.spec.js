@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const factory = require('./index');
+const factory = require('./cielo');
 
 jest.mock('axios');
 
