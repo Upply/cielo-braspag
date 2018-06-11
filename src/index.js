@@ -38,26 +38,41 @@ module.exports = (config) => {
       getCard: token => getInstance.get(`/1/card/${token}`),
     },
     creditCards: {
-      payWithToken: params => postInstance.post('/1/sales', {
-        RequestId: params.requestId,
-        MerchantOrderId: params.merchantOrderId,
-        Customer: {
-          Name: params.customerName,
-          Status: params.customerStatus,
-        },
-        Payment: {
-          Type: 'CreditCard',
-          Amount: params.amount,
-          Installments: params.installments,
-          SoftDescriptor: params.softDescriptor,
-          ReturnUrl: params.returnUrl,
-          CreditCard: {
-            CardToken: params.cardToken,
-            SecurityCode: params.cvv,
-            Brand: params.brand,
+      payWithToken: (params) => {
+        const paymentParams = {
+          RequestId: params.requestId,
+          MerchantOrderId: params.merchantOrderId,
+          Customer: {
+            Name: params.customerName,
+            Status: params.customerStatus,
           },
-        },
-      }),
+          Payment: {
+            Type: 'CreditCard',
+            Amount: params.amount,
+            Installments: params.installments,
+            SoftDescriptor: params.softDescriptor,
+            ReturnUrl: params.returnUrl,
+            CreditCard: {
+              CardToken: params.cardToken,
+              SecurityCode: params.cvv,
+              Brand: params.brand,
+            },
+          },
+        };
+
+        if (params.splitRules) {
+          paymentParams.SplitPayments = params.splitRules.map(rule => ({
+            SubordinateMerchantId: rule.merchantId,
+            Amount: rule.amount,
+            Fares: {
+              Mdr: rule.mdrPercentage,
+              Fee: rule.fee,
+            },
+          }));
+        }
+
+        return postInstance.post('/1/sales', paymentParams);
+      },
     },
   };
 };

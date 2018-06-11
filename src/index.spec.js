@@ -69,7 +69,13 @@ describe('Cielo API Wrapper', () => {
           returnUrl: 'http://google.com',
           cardToken: '0e310ad0-622e-4374-92bd-3ed17f1d6709',
           cvv: '456',
-          brand: 'Master'
+          brand: 'Master',
+          splitRules: [{
+            amount: 12000,
+            merchantId: 'restaurant_merchant_id',
+            mdrPercentage: 3,
+            fee: 50,
+          }],
         };
 
         nock('https://apisandbox.cieloecommerce.cielo.com.br')
@@ -92,6 +98,14 @@ describe('Cielo API Wrapper', () => {
                 Brand: params.brand,
               },
             },
+            SplitPayments: [{
+              SubordinateMerchantId: 'restaurant_merchant_id',
+              Amount: 12000,
+              Fares: {
+                Mdr: 3,
+                Fee: 50,
+              },
+            }],
           })
           .reply(200);
 
