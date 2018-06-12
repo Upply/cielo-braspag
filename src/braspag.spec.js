@@ -24,32 +24,9 @@ describe('Braspag Middleware', () => {
   })
 
   it('fetches an auth token', () => {
-    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret' });
+    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
     return braspag.renewToken().then(() => {
       expect(authScope.isDone()).toBe(true);
-    });
-  });
-
-  it('changes headers for calls to /sales that have the SplitPayments property in the request body', () => {
-    const scope = nock('https://myapi.com.br')
-      .matchHeader('Authorization', 'Bearer 1omg3om23otoken103mg0mgblablablaogm2o3mog')
-      .post('/endpoint', { some_data: 'blablabla' })
-      .reply(200);
-
-    const wrapperAxiosInstance = axios.create({ baseURL: 'https://myapi.com.br' });
-    const someWrapper = {
-      use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware),
-      doSomething: () => wrapperAxiosInstance.post('/endpoint', { some_data: 'blablabla' }),
-    };
-
-    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret' });
-
-    return braspag.renewToken().then(() => {
-      someWrapper.use(braspag.intercept);
-
-      return someWrapper.doSomething().then(() => {
-        expect(scope.isDone()).toBe(true);
-      });
     });
   });
 
@@ -65,7 +42,7 @@ describe('Braspag Middleware', () => {
       doSomething: () => wrapperAxiosInstance.post('/endpoint', { some_data: 'blablabla' }),
     };
 
-    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret' });
+    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
 
     someWrapper.use(braspag.intercept);
 
@@ -77,7 +54,7 @@ describe('Braspag Middleware', () => {
   it.skip('automatically renews token when the API response shows that the token has expired', () => {});
 
   describe('changes request body data', () => {
-    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret' });
+    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
 
     let wrapperAxiosInstance = null;
 

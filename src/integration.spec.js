@@ -63,7 +63,7 @@ describe('Integration tests Cielo - Braspag', () => {
       })
       .reply(200);
 
-    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret' });
+    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
     cielo.use(braspag.intercept);
     return cielo.creditCards.payWithToken(params).then(() => {
       expect(scope.isDone()).toBe(true);

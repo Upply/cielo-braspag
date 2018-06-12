@@ -1,7 +1,11 @@
 const axios = require('axios');
 const querystring = require('querystring');
 
-const SERVER_URL = 'https://authsandbox.braspag.com.br';
+const BRASPAG_SANDBOX_OAUTH_URL = 'https://authsandbox.braspag.com.br';
+const BRASPAG_SANDBOX_SPLIT_URL = 'https://splitsandbox.braspag.com.br';
+
+const BRASPAG_PRODUCTION_OAUTH_URL = 'https://auth.braspag.com.br';
+const BRASPAG_PRODUCTION_SPLIT_URL = 'https://split.braspag.com.br';
 
 let oauth2ServerInstance = null;
 let token = null;
@@ -10,7 +14,7 @@ module.exports = (config) => {
   const encodedAuth = Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64');
 
   oauth2ServerInstance = oauth2ServerInstance || axios.create({
-    baseURL: SERVER_URL,
+    baseURL: config.sandbox ? BRASPAG_SANDBOX_OAUTH_URL : BRASPAG_PRODUCTION_OAUTH_URL,
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
       Authorization: `Basic ${encodedAuth}`,
@@ -39,7 +43,7 @@ module.exports = (config) => {
 
   return {
     renewToken,
-    intercept: requestConfig => {
+    intercept: (requestConfig) => {
       if (!token) {
         return renewToken().then(() => mutateConfig(requestConfig));
       }
