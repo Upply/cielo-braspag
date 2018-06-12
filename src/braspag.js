@@ -25,6 +25,7 @@ module.exports = (config) => {
     .post('/oauth2/token', querystring.stringify({ grant_type: 'client_credentials' }))
     .then((response) => {
       token = response.data.access_token;
+      return token;
     });
 
   const mutateConfig = (requestConfig) => {
@@ -43,12 +44,24 @@ module.exports = (config) => {
 
   return {
     renewToken,
-    intercept: (requestConfig) => {
+    requestInterceptor: (requestConfig) => {
       if (!token) {
         return renewToken().then(() => mutateConfig(requestConfig));
       }
 
       return mutateConfig(requestConfig);
+    },
+    responseInterceptor: response => response,
+    responseErrorInterceptor: (error) => {
+      const errorResponse = error.response;
+      if (errorResponse.status === 401 && !!errorResponse.data.find(resp => resp.Code === 238)) {
+        return renewToken().then((token) => {
+          errorResponse.config.headers.Authorization = `Bearer ${token}`;
+          axios(errorResponse.config)
+        });
+      }
+
+      return Promise.reject(error);
     },
   };
 };

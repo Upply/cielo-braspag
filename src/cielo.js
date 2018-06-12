@@ -24,8 +24,11 @@ module.exports = (config) => {
 
   return {
     use: (middleware) => {
-      getInstance.interceptors.request.use(middleware);
-      postInstance.interceptors.request.use(middleware);
+      getInstance.interceptors.request.use(middleware.requestInterceptor);
+      getInstance.interceptors.response.use(middleware.responseInterceptor, middleware.responseErrorInterceptor);
+
+      postInstance.interceptors.request.use(middleware.requestInterceptor);
+      postInstance.interceptors.response.use(middleware.responseInterceptor, middleware.responseErrorInterceptor);
     },
     cards: {
       tokenizeCard: card => postInstance.post('/1/card', {
