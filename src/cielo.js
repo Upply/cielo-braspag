@@ -65,7 +65,7 @@ module.exports = (config) => {
         };
 
         if (params.splitRules) {
-          paymentParams.SplitPayments = params.splitRules.map(rule => ({
+          paymentParams.Payment.SplitPayments = params.splitRules.map(rule => ({
             SubordinateMerchantId: rule.merchantId,
             Amount: rule.amount,
             Fares: {

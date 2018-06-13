@@ -99,15 +99,15 @@ describe('Cielo API Wrapper', () => {
                 SecurityCode: params.cvv,
                 Brand: params.brand,
               },
+              SplitPayments: [{
+                SubordinateMerchantId: 'restaurant_merchant_id',
+                Amount: 12000,
+                Fares: {
+                  Mdr: 3,
+                  Fee: 50,
+                },
+              }],
             },
-            SplitPayments: [{
-              SubordinateMerchantId: 'restaurant_merchant_id',
-              Amount: 12000,
-              Fares: {
-                Mdr: 3,
-                Fee: 50,
-              },
-            }],
           })
           .reply(200);
 
