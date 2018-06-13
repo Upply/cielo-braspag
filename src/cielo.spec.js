@@ -70,6 +70,7 @@ describe('Cielo API Wrapper', () => {
           cardToken: '0e310ad0-622e-4374-92bd-3ed17f1d6709',
           cvv: '456',
           brand: 'Master',
+          capture: true,
           splitRules: [{
             amount: 12000,
             merchantId: 'restaurant_merchant_id',
@@ -92,6 +93,7 @@ describe('Cielo API Wrapper', () => {
               Installments: params.installments,
               SoftDescriptor: params.softDescriptor,
               ReturnUrl: params.returnUrl,
+              Capture: true,
               CreditCard: {
                 CardToken: params.cardToken,
                 SecurityCode: params.cvv,

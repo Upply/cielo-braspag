@@ -60,6 +60,7 @@ module.exports = (config) => {
               SecurityCode: params.cvv,
               Brand: params.brand,
             },
+            Capture: params.capture || false,
           },
         };
 

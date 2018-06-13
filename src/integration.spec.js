@@ -54,6 +54,7 @@ describe('Integration tests Cielo - Braspag', () => {
           Installments: params.installments,
           SoftDescriptor: params.softDescriptor,
           ReturnUrl: params.returnUrl,
+          Capture: false,
           CreditCard: {
             CardToken: params.cardToken,
             SecurityCode: params.cvv,
