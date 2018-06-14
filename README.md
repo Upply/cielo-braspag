@@ -182,8 +182,7 @@ André Mazoni
 
 ## <a name="contribua"></a> Contribua
 
-A lib está sendo implementada conforme houver necessidade dos autores de utilizar outros recursos da API.
-
+Recursos da API estão sendo implementados conforme a necessidade. Caso precise de alguma, não hesite em solicitar ou em adicioná-la à lib.
 Contribuições são bem vindas.
 
 ## <a name="license"></a> Licença
