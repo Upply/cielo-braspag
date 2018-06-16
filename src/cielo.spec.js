@@ -113,6 +113,21 @@ describe('Cielo API Wrapper', () => {
 
         return expect(cielo.creditCards.payWithToken(params)).resolves.toBeDefined();
       });
+
+      it('cancelSale: calls /1/sales/{paymentId}/void to cancel a sale', () => {
+        const params = {
+          paymentId: '123456',
+          amount: 12700,
+        };
+
+        const scope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
+          .put(`/1/sales/${params.paymentId}/void?amount=${params.amount}`)
+          .reply(200);
+
+        return cielo.creditCards.cancelSale(params).then(() => {
+          expect(scope.isDone()).toBe(true);
+        });
+      });
     });
   });
 });

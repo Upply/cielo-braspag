@@ -77,6 +77,7 @@ module.exports = (config) => {
 
         return postInstance.post('/1/sales', paymentParams);
       },
+      cancelSale: params => postInstance.put(`/1/sales/${params.paymentId}/void?amount=${params.amount}`),
     },
   };
 };
