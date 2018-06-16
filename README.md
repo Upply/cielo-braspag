@@ -15,6 +15,7 @@ README baseado na lib [banzeh/cielo](https://github.com/banzeh/cielo)
 
 ### [API Cielo](#cielo-api)
 + [Tokenização de cartões](#card-tokenization)
++ [Cancelamento de vendas](#sale-cancellation)
 
 ### [API Braspag](#braspag-api)
 
@@ -119,6 +120,17 @@ const params = {
 
 // POST para /1/sales
 cielo.creditCards.payWithToken(params);
+```
+
+### <a name="sale-cancellation"></a> [Cancelamento de vendas](https://developercielo.github.io/manual/cielo-ecommerce#cancelamento-total)
+```js
+const params = {
+  paymentId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+  amount: 12500,
+};
+
+// PUT para /1/sales/{paymentId}/void?amount={amount}
+cielo.creditCards.cancelSale(params);
 ```
 
 ## <a name="braspag-api"></a> API Braspag
