@@ -41,7 +41,7 @@ module.exports = (config) => {
       getCard: token => getInstance.get(`/1/card/${token}`),
     },
     creditCards: {
-      payWithToken: (params) => {
+      payWithToken: (params, fraudAnalysisData) => {
         const paymentParams = {
           RequestId: params.requestId,
           MerchantOrderId: params.merchantOrderId,
@@ -73,6 +73,10 @@ module.exports = (config) => {
               Fee: rule.fee,
             },
           }));
+        }
+
+        if (fraudAnalysisData) {
+          paymentParams.Payment.FraudAnalysis = fraudAnalysisData;
         }
 
         return postInstance.post('/1/sales', paymentParams);

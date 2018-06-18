@@ -16,6 +16,7 @@ README baseado na lib [banzeh/cielo](https://github.com/banzeh/cielo)
 ### [API Cielo](#cielo-api)
 + [Tokenização de cartões](#card-tokenization)
 + [Cancelamento de vendas](#sale-cancellation)
++ [Análise de Fraude](#fraud-analysis)
 
 ### [API Braspag](#braspag-api)
 
@@ -90,7 +91,7 @@ const card = {
 };
 
 // POST para /1/card
-cielo.cards.tokenizeCard(card);
+cielo.cards.tokenizeCard(card, [fraudAnalysisData]);
 ```
 
 #### Consultando um cartão pelo token gerado
@@ -132,6 +133,9 @@ const params = {
 // PUT para /1/sales/{paymentId}/void?amount={amount}
 cielo.creditCards.cancelSale(params);
 ```
+
+### <a name="fraud-analysis"></a> [Análises de Fraude](https://developercielo.github.io/manual/cielo-ecommerce#transa%C3%A7%C3%A3o-com-analise-de-fraude-(af))
+Caso deseje utilizar a análise de fraude, passe os dados necessários no segundo parâmetro de qualquer método de pagamento (por exemplo, payWithToken), de acordo com a documentação da Cielo.
 
 ## <a name="braspag-api"></a> API Braspag
 O código relativo à Braspag serve apenas como um middleware para conformar a chamada aos requisitos da Braspag de forma transparente.
