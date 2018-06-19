@@ -54,7 +54,7 @@ module.exports = (config) => {
     responseInterceptor: response => response,
     responseErrorInterceptor: (error) => {
       const errorResponse = error.response || { data: [] };
-      if (!!errorResponse.data.find(resp => resp.Code === 238)) {
+      if (Array.isArray(errorResponse.data) && !!errorResponse.data.find(resp => resp.Code === 238)) {
         return renewToken().then((token) => {
           errorResponse.config.headers.Authorization = `Bearer ${token}`;
           axios(errorResponse.config)
