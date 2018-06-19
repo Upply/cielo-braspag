@@ -53,7 +53,7 @@ module.exports = (config) => {
     },
     responseInterceptor: response => response,
     responseErrorInterceptor: (error) => {
-      const errorResponse = error.response;
+      const errorResponse = error.response || { data: [] };
       if (!!errorResponse.data.find(resp => resp.Code === 238)) {
         return renewToken().then((token) => {
           errorResponse.config.headers.Authorization = `Bearer ${token}`;
