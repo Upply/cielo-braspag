@@ -48,6 +48,8 @@ module.exports = (config) => {
           Customer: {
             Name: params.customerName,
             Status: params.customerStatus,
+            Identity: params.customerIdentity,
+            IdentityType: params.customerIdentityType,
           },
           Payment: {
             Type: 'CreditCard',

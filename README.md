@@ -109,6 +109,8 @@ const params = {
   merchantOrderId: '1234',
   customerName: 'Biro da Silva',
   customerStatus: 'NEW',
+  customerIdentity: '11225468954',
+  customerIdentityType: 'CPF', // ou 'CNPJ'
   amount: 12000,
   installments: 2,
   softDescriptor: 'some bullcrap',

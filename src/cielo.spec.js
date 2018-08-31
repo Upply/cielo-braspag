@@ -63,6 +63,8 @@ describe('Cielo API Wrapper', () => {
           merchantOrderId: '1234',
           customerName: 'Biro da Silva',
           customerStatus: 'NEW',
+          customerIdentity: '11225468954',
+          customerIdentityType: 'CPF',
           amount: 12000,
           installments: 2,
           softDescriptor: 'some bullcrap',
@@ -86,6 +88,8 @@ describe('Cielo API Wrapper', () => {
             Customer: {
               Name: params.customerName,
               Status: params.customerStatus,
+              Identity: '11225468954',
+              IdentityType: 'CPF',
             },
             Payment: {
               Type: 'CreditCard',
