@@ -50,6 +50,7 @@ module.exports = (config) => {
             Status: params.customerStatus,
             Identity: params.customerIdentity,
             IdentityType: params.customerIdentityType,
+            IpAddress: params.customerIp,
           },
           Payment: {
             Type: 'CreditCard',

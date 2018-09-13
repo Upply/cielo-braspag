@@ -30,6 +30,9 @@ describe('Integration tests Cielo - Braspag', () => {
       merchantOrderId: '1234',
       customerName: 'Biro da Silva',
       customerStatus: 'NEW',
+      customerIdentity: '11225468954',
+      customerIdentityType: 'CPF',
+      customerIp: '123:123:123:255',
       amount: 12000,
       installments: 2,
       softDescriptor: 'some bullcrap',
@@ -47,6 +50,9 @@ describe('Integration tests Cielo - Braspag', () => {
         Customer: {
           Name: params.customerName,
           Status: params.customerStatus,
+          Identity: '11225468954',
+          IdentityType: 'CPF',
+          IpAddress: '123:123:123:255',
         },
         Payment: {
           Type: 'SplittedCreditCard',

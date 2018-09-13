@@ -65,6 +65,7 @@ describe('Cielo API Wrapper', () => {
           customerStatus: 'NEW',
           customerIdentity: '11225468954',
           customerIdentityType: 'CPF',
+          customerIp: '123:123:123:255',
           amount: 12000,
           installments: 2,
           softDescriptor: 'some bullcrap',
@@ -90,6 +91,7 @@ describe('Cielo API Wrapper', () => {
               Status: params.customerStatus,
               Identity: '11225468954',
               IdentityType: 'CPF',
+              IpAddress: '123:123:123:255',
             },
             Payment: {
               Type: 'CreditCard',
