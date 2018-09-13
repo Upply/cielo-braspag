@@ -31,6 +31,7 @@ describe('Integration tests Cielo - Braspag', () => {
       customerName: 'Biro da Silva',
       customerStatus: 'NEW',
       customerIdentity: '11225468954',
+      customerEmail: 'lero@lero.com',
       customerIdentityType: 'CPF',
       customerIp: '123:123:123:255',
       amount: 12000,
@@ -53,6 +54,7 @@ describe('Integration tests Cielo - Braspag', () => {
           Identity: '11225468954',
           IdentityType: 'CPF',
           IpAddress: '123:123:123:255',
+          Email: 'lero@lero.com',
         },
         Payment: {
           Type: 'SplittedCreditCard',

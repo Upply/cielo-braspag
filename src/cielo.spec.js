@@ -63,6 +63,7 @@ describe('Cielo API Wrapper', () => {
           merchantOrderId: '1234',
           customerName: 'Biro da Silva',
           customerStatus: 'NEW',
+          customerEmail: 'lero@lero.com',
           customerIdentity: '11225468954',
           customerIdentityType: 'CPF',
           customerIp: '123:123:123:255',
@@ -89,6 +90,7 @@ describe('Cielo API Wrapper', () => {
             Customer: {
               Name: params.customerName,
               Status: params.customerStatus,
+              Email: 'lero@lero.com',
               Identity: '11225468954',
               IdentityType: 'CPF',
               IpAddress: '123:123:123:255',
