@@ -57,7 +57,7 @@ module.exports = (config) => {
       if (Array.isArray(errorResponse.data) && !!errorResponse.data.find(resp => resp.Code === 238)) {
         return renewToken().then((token) => {
           errorResponse.config.headers.Authorization = `Bearer ${token}`;
-          axios(errorResponse.config)
+          return axios(errorResponse.config);
         });
       }
 

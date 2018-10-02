@@ -1,6 +1,6 @@
 {
   "name": "@upply/cielo-braspag",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Wrapper for Cielo API / Braspag Middleware",
   "main": "src/index",
   "scripts": {
