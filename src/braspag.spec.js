@@ -56,8 +56,6 @@ describe('Braspag Middleware', () => {
     nock('https://authsandbox.braspag.com.br')
       .matchHeader('content-type', 'application/x-www-form-urlencoded')
       .post('/oauth2/token', { grant_type: 'client_credentials' })
-      .reply(200, { access_token: '1omg3om23otoken103mg0mgblablablaogm2o3mog' })
-      .post('/oauth2/token', { grant_type: 'client_credentials' })
       .reply(200, { access_token: 'oktoken12312412thisisookey102mv30m' })
 
     const replyHandler = jest.fn(function() {
@@ -91,7 +89,8 @@ describe('Braspag Middleware', () => {
 
     someWrapper.use(braspag);
 
-    return someWrapper.doSomething().then(() => {
+    return someWrapper.doSomething().then((data) => {
+      expect(data).toBeDefined();
       expect(replyHandler).toHaveBeenCalledTimes(2);
       expect(apiNock.isDone()).toBe(true);
     });
