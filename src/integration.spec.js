@@ -78,4 +78,53 @@ describe('Integration tests Cielo - Braspag', () => {
       expect(scope.isDone()).toBe(true);
     });
   });
+
+  it('calls cielo.cancelSale and braspag modifies the request headers and body', () => {
+    nock('https://authsandbox.braspag.com.br')
+      .matchHeader('content-type', 'application/x-www-form-urlencoded')
+      .post('/oauth2/token', { grant_type: 'client_credentials' })
+      .reply(200, { access_token: '1omg3om23otoken103mg0mgblablablaogm2o3mog' });
+
+    const cieloParams = {
+      merchantId: 'my_merchant_id',
+      merchantKey: 'my_merchant_key',
+      sandbox: true,
+    };
+
+    const cielo = cieloFactory(cieloParams);
+
+    const params = {
+      paymentId: '0123456789',
+      amount: 1500,
+      data: {
+        split: [{
+          amount: 1200,
+          merchantId: '01234',
+        }, {
+          amount: 300,
+          merchantId: '56789',
+        }],
+      },
+    };
+
+    const scope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
+      .matchHeader('Authorization', 'Bearer 1omg3om23otoken103mg0mgblablablaogm2o3mog')
+      .put('/1/sales/0123456789/void?amount=1500', {
+        VoidSplitPayments: [{
+          SubordinateMerchantId: '01234',
+          VoidedAmount: 1200,
+        }, {
+          SubordinateMerchantId: '56789',
+          VoidedAmount: 300,
+        }],
+      })
+      .reply(200);
+
+    const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
+    cielo.use(braspag);
+
+    return cielo.creditCards.cancelSale(params).then(() => {
+      expect(scope.isDone()).toBe(true);
+    });
+  });
 });

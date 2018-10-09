@@ -125,15 +125,30 @@ describe('Cielo API Wrapper', () => {
       it('cancelSale: calls /1/sales/{paymentId}/void to cancel a sale', () => {
         const params = {
           paymentId: '123456',
-          amount: 12700,
         };
 
-        const scope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
-          .put(`/1/sales/${params.paymentId}/void?amount=${params.amount}`)
+        const firstScope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
+          .put(`/1/sales/${params.paymentId}/void`)
           .reply(200);
 
-        return cielo.creditCards.cancelSale(params).then(() => {
-          expect(scope.isDone()).toBe(true);
+        const secondScope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
+          .put(`/1/sales/${params.paymentId}/void?amount=1500`)
+          .reply(200);
+
+        let firstCallPromise = cielo.creditCards.cancelSale(params);
+
+        params.amount = 1500;
+
+        let secondCallPromise = cielo.creditCards.cancelSale(params);
+
+        const promises = [
+          firstCallPromise,
+          secondCallPromise,
+        ];
+
+        return Promise.all(promises).then(() => {
+          expect(firstScope.isDone()).toBe(true);
+          expect(secondScope.isDone()).toBe(true);
         });
       });
     });

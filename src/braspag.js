@@ -1,5 +1,7 @@
-const axios = require('axios');
 const querystring = require('querystring');
+const url = require('url');
+
+const axios = require('axios');
 
 const BRASPAG_SANDBOX_OAUTH_URL = 'https://authsandbox.braspag.com.br';
 const BRASPAG_SANDBOX_SPLIT_URL = 'https://splitsandbox.braspag.com.br';
@@ -37,6 +39,34 @@ module.exports = (config) => {
 
     if (requestConfig.data && requestConfig.data.Payment && requestConfig.data.Payment.Type === 'DebitCard') {
       requestConfig.data.Payment.Type = 'SplittedDebitCard';
+    }
+
+    if (requestConfig.url.includes('/sales')) {
+      let data = requestConfig.data;
+
+      const amount = parseInt(url.parse(requestConfig.url, true).query.amount, 10);
+
+      const missingSplitConfig = !!amount && !data.split;
+
+      if (missingSplitConfig) {
+        return Promise.reject(new Error('The split config is needed for partial cancellations'));
+      }
+
+      if (data.split) {
+        const splitSum = data.split.reduce((sum, config) => sum + config.amount, 0);
+
+        if (!amount || splitSum !== amount) {
+          return Promise.reject(new Error('The sum of amounts in each split configuration must equal the amount in the querystring'));
+        }
+
+        data.VoidSplitPayments = data.split.map(config => ({
+          SubordinateMerchantId: config.merchantId,
+          VoidedAmount: config.amount,
+        }));
+
+        data = Object.assign({}, data, { amount: undefined, split: undefined });
+        requestConfig.data = data;
+      }
     }
 
     return requestConfig;

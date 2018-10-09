@@ -153,7 +153,78 @@ describe('Braspag Middleware', () => {
         expect(scope.isDone()).toBe(true);
       });
     });
+
+    it('throws an error if the split config is not passed for a partial cancellation', () => {
+      const someWrapper = {
+        use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
+        doSomething: () => wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
+          amount: 1500,
+        }),
+      };
+
+      someWrapper.use(braspag);
+
+      return someWrapper.doSomething().catch((error) => {
+        expect(error).toBeDefined();
+        expect(error.message).toEqual('The split config is needed for partial cancellations');
+      });
+    });
+
+    it('throws an error if the sum of the amounts in each split object is different than the amount in the querystring', () => {
+      const someWrapper = {
+        use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
+        doSomething: () => wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
+          amount: 1500,
+          split: [{
+            amount: 500,
+            merchantId: '01234',
+          }, {
+            amount: 200,
+            merchantId: '56789',
+          }],
+        }),
+      };
+
+      someWrapper.use(braspag);
+
+      return someWrapper.doSomething().catch((error) => {
+        expect(error).toBeDefined();
+        expect(error.message).toEqual('The sum of amounts in each split configuration must equal the amount in the querystring');
+      });
+    });
+
+    it('changes body data when partially cancelling a purchase', () => {
+      const scope = nock('https://myapi.com.br')
+        .put('/sales/0123456789/void?amount=1500', {
+          VoidSplitPayments: [{
+            SubordinateMerchantId: '01234',
+            VoidedAmount: 1200,
+          }, {
+            SubordinateMerchantId: '56789',
+            VoidedAmount: 300,
+          }],
+        })
+        .reply(200);
+
+      const someWrapper = {
+        use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
+        doSomething: () => wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
+          amount: 1500,
+          split: [{
+            amount: 1200,
+            merchantId: '01234',
+          }, {
+            amount: 300,
+            merchantId: '56789',
+          }],
+        }),
+      };
+
+      someWrapper.use(braspag);
+
+      return someWrapper.doSomething().then(() => {
+        expect(scope.isDone()).toBe(true);
+      });
+    });
   });
-
-
 });
