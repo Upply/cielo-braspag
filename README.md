@@ -127,12 +127,23 @@ cielo.creditCards.payWithToken(params);
 
 ### <a name="sale-cancellation"></a> [Cancelamento de vendas](https://developercielo.github.io/manual/cielo-ecommerce#cancelamento-total)
 ```js
+// cancelamento total
+
+const params = {
+  paymentId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+};
+
+// PUT para /1/sales/{paymentId}/void
+cielo.creditCards.cancelSale(params);
+
+// ou cancelamento parcial
+
 const params = {
   paymentId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
   amount: 12500,
 };
 
-// PUT para /1/sales/{paymentId}/void?amount={amount}
+// PUT para /1/sales/{paymentId}/void?amount=12500
 cielo.creditCards.cancelSale(params);
 ```
 
@@ -158,6 +169,36 @@ Verifica se há um oauth token. Caso não haja, chama internamente `renewToken()
 
 - Adiciona o header Authorization com o valor `Bearer [oauth_token]`
 - Altera o body.Payment.Type de CreditCard para SplittedCreditCard ou de DebitCard para SplittedDebitCard
+- Na chamada de cancelSale, para cancelamentos **parciais**, torna **obrigatório** passar a configuração de split, cuja soma do campo "amount" deve ser **igual** a params.amount, como no exemplo abaixo:
+
+```js
+// cancelamento total (sem alterações)
+
+const params = {
+  paymentId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+};
+
+// PUT para /1/sales/{paymentId}/void
+cielo.creditCards.cancelSale(params);
+
+// ou cancelamento parcial
+
+const params = {
+  paymentId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+  amount: 12500,
+  split: [{
+    merchantId: 'first-merchant-id',
+    amount: 10000,
+  }, {
+    merchantId: 'second-merchant-id',
+    amount: 2500,
+  }],
+};
+
+// PUT para /1/sales/{paymentId}/void?amount=12500
+cielo.creditCards.cancelSale(params);
+```
+
 #### responseInterceptor
 Apenas retorna a response.
 
