@@ -17,6 +17,7 @@ README baseado na lib [banzeh/cielo](https://github.com/banzeh/cielo)
 + [Tokenização de cartões](#card-tokenization)
 + [Cancelamento de vendas](#sale-cancellation)
 + [Análise de Fraude](#fraud-analysis)
++ [Consulta de transações](#sale-consult)
 
 ### [API Braspag](#braspag-api)
 
@@ -145,6 +146,27 @@ const params = {
 
 // PUT para /1/sales/{paymentId}/void?amount=12500
 cielo.creditCards.cancelSale(params);
+```
+
+### <a name="sale-consult"></a> [Consulta de transações](https://developercielo.github.io/manual/cielo-ecommerce#consulta-paymentid)
+```js
+// consulta por paymentId
+
+const params = {
+  paymentId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+};
+
+// GET para /1/sales/{paymentId}
+cielo.consulting.sale(params);
+
+// ou consulta por merchantOrderId
+
+const params = {
+  merchantOrderId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+};
+
+// GET para /1/sales?merchantOrderId={merchantOrderId}
+cielo.consulting.sale(params);
 ```
 
 ### <a name="fraud-analysis"></a> [Análises de Fraude](https://developercielo.github.io/manual/cielo-ecommerce#transa%C3%A7%C3%A3o-com-analise-de-fraude-(af))

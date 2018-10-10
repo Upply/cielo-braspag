@@ -90,5 +90,20 @@ module.exports = (config) => {
         return postInstance.put(`/1/sales/${params.paymentId}/void${amount ? '?amount=' + amount : ''}`, params.data);
       },
     },
+    consulting: {
+      sale: ({ paymentId, merchantOrderId } = {}) => {
+        if (!paymentId && !merchantOrderId) {
+          return Promise.reject(new Error('Either paymentId or merchantOrderId must be passed'));
+        }
+
+        if (paymentId) {
+          return getInstance.get(`/1/sales/${paymentId}`);
+        }
+
+        if (merchantOrderId) {
+          return getInstance.get(`/1/sales?merchantOrderId=${merchantOrderId}`);
+        }
+      },
+    },
   };
 };

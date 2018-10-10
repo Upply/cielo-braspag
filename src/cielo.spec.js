@@ -152,5 +152,32 @@ describe('Cielo API Wrapper', () => {
         });
       });
     });
+
+    describe('cielo.consulting', () => {
+      it('sale: returns a rejected Promise if neither paymentId nor merchantOrderId are passed', () => {
+        return cielo.consulting.sale({}).catch((error) => {
+          expect(error).toBeDefined();
+          expect(error.message).toEqual('Either paymentId or merchantOrderId must be passed');
+        });
+      });
+
+      it('sale: calls /1/sales/{paymentId} to GET payment data', () => {
+        const params = { paymentId: '123456' };
+        const firstScope = nock('https://apiquerysandbox.cieloecommerce.cielo.com.br')
+          .get(`/1/sales/${params.paymentId}`)
+          .reply(200);
+
+        return cielo.consulting.sale(params).then(() => expect(firstScope.isDone()).toBe(true));
+      });
+
+      it('sale: calls /1/sales/?merchantOrderId={merchantOrderId} to GET payment data', () => {
+        const params = { merchantOrderId: '123456' };
+        const firstScope = nock('https://apiquerysandbox.cieloecommerce.cielo.com.br')
+          .get(`/1/sales?merchantOrderId=${params.merchantOrderId}`)
+          .reply(200);
+
+        return cielo.consulting.sale(params).then(() => expect(firstScope.isDone()).toBe(true));
+      });
+    });
   });
 });
