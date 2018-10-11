@@ -42,7 +42,7 @@ module.exports = (config) => {
     }
 
     if (requestConfig.url.includes('/sales')) {
-      let data = requestConfig.data;
+      let data = requestConfig.data || {};
 
       const amount = parseInt(url.parse(requestConfig.url, true).query.amount, 10);
 
