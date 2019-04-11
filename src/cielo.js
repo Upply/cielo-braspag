@@ -6,7 +6,7 @@ const CIELO_SANDBOX_POST_URL = 'https://apisandbox.cieloecommerce.cielo.com.br';
 const CIELO_PRODUCTION_QUERY_URL = 'https://apiquery.cieloecommerce.cielo.com.br';
 const CIELO_PRODUCTION_POST_URL = 'https://api.cieloecommerce.cielo.com.br';
 
-module.exports = (config) => {
+module.exports = config => {
   const headers = {
     MerchantId: config.merchantId,
     MerchantKey: config.merchantKey,
@@ -23,7 +23,7 @@ module.exports = (config) => {
   });
 
   return {
-    use: (middleware) => {
+    use: middleware => {
       getInstance.interceptors.request.use(middleware.requestInterceptor);
       getInstance.interceptors.response.use(middleware.responseInterceptor, middleware.responseErrorInterceptor);
 
@@ -31,13 +31,14 @@ module.exports = (config) => {
       postInstance.interceptors.response.use(middleware.responseInterceptor, middleware.responseErrorInterceptor);
     },
     cards: {
-      tokenizeCard: card => postInstance.post('/1/card', {
-        CustomerName: card.customerName,
-        CardNumber: card.number,
-        Holder: card.holder,
-        ExpirationDate: card.expirationDate,
-        Brand: card.brand,
-      }),
+      tokenizeCard: card =>
+        postInstance.post('/1/card', {
+          CustomerName: card.customerName,
+          CardNumber: card.number,
+          Holder: card.holder,
+          ExpirationDate: card.expirationDate,
+          Brand: card.brand,
+        }),
       getCard: token => getInstance.get(`/1/card/${token}`),
     },
     creditCards: {
@@ -85,7 +86,7 @@ module.exports = (config) => {
 
         return postInstance.post('/1/sales', paymentParams);
       },
-      cancelSale: (params) => {
+      cancelSale: params => {
         const amount = params.amount;
         return postInstance.put(`/1/sales/${params.paymentId}/void${amount ? '?amount=' + amount : ''}`, params.data);
       },

@@ -12,25 +12,28 @@ const BRASPAG_PRODUCTION_SPLIT_URL = 'https://split.braspag.com.br';
 let oauth2ServerInstance = null;
 let token = null;
 
-module.exports = (config) => {
+module.exports = config => {
   const encodedAuth = Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64');
 
-  oauth2ServerInstance = oauth2ServerInstance || axios.create({
-    baseURL: config.sandbox ? BRASPAG_SANDBOX_OAUTH_URL : BRASPAG_PRODUCTION_OAUTH_URL,
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${encodedAuth}`,
-    },
-  });
-
-  const renewToken = () => oauth2ServerInstance
-    .post('/oauth2/token', querystring.stringify({ grant_type: 'client_credentials' }))
-    .then((response) => {
-      token = response.data.access_token;
-      return token;
+  oauth2ServerInstance =
+    oauth2ServerInstance ||
+    axios.create({
+      baseURL: config.sandbox ? BRASPAG_SANDBOX_OAUTH_URL : BRASPAG_PRODUCTION_OAUTH_URL,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${encodedAuth}`,
+      },
     });
 
-  const mutateConfig = (requestConfig) => {
+  const renewToken = () =>
+    oauth2ServerInstance
+      .post('/oauth2/token', querystring.stringify({ grant_type: 'client_credentials' }))
+      .then(response => {
+        token = response.data.access_token;
+        return token;
+      });
+
+  const mutateConfig = requestConfig => {
     requestConfig.headers.common.Authorization = `Bearer ${token}`;
 
     if (requestConfig.data && requestConfig.data.Payment && requestConfig.data.Payment.Type === 'CreditCard') {
@@ -56,7 +59,9 @@ module.exports = (config) => {
         const splitSum = data.split.reduce((sum, config) => sum + config.amount, 0);
 
         if (!amount || splitSum !== amount) {
-          return Promise.reject(new Error('The sum of amounts in each split configuration must equal the amount in the querystring'));
+          return Promise.reject(
+            new Error('The sum of amounts in each split configuration must equal the amount in the querystring'),
+          );
         }
 
         data.VoidSplitPayments = data.split.map(config => ({
@@ -74,7 +79,7 @@ module.exports = (config) => {
 
   return {
     renewToken,
-    requestInterceptor: (requestConfig) => {
+    requestInterceptor: requestConfig => {
       if (!token) {
         return renewToken().then(() => mutateConfig(requestConfig));
       }
@@ -82,10 +87,10 @@ module.exports = (config) => {
       return mutateConfig(requestConfig);
     },
     responseInterceptor: response => response,
-    responseErrorInterceptor: (error) => {
+    responseErrorInterceptor: error => {
       const errorResponse = error.response || { data: [] };
       if (Array.isArray(errorResponse.data) && !!errorResponse.data.find(resp => resp.Code === 238)) {
-        return renewToken().then((token) => {
+        return renewToken().then(token => {
           errorResponse.config.headers.Authorization = `Bearer ${token}`;
           return axios(errorResponse.config);
         });

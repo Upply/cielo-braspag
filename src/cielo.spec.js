@@ -75,12 +75,14 @@ describe('Cielo API Wrapper', () => {
           cvv: '456',
           brand: 'Master',
           capture: true,
-          splitRules: [{
-            amount: 12000,
-            merchantId: 'restaurant_merchant_id',
-            mdrPercentage: 3,
-            fee: 50,
-          }],
+          splitRules: [
+            {
+              amount: 12000,
+              merchantId: 'restaurant_merchant_id',
+              mdrPercentage: 3,
+              fee: 50,
+            },
+          ],
         };
 
         nock('https://apisandbox.cieloecommerce.cielo.com.br')
@@ -107,14 +109,16 @@ describe('Cielo API Wrapper', () => {
                 SecurityCode: params.cvv,
                 Brand: params.brand,
               },
-              SplitPayments: [{
-                SubordinateMerchantId: 'restaurant_merchant_id',
-                Amount: 12000,
-                Fares: {
-                  Mdr: 3,
-                  Fee: 50,
+              SplitPayments: [
+                {
+                  SubordinateMerchantId: 'restaurant_merchant_id',
+                  Amount: 12000,
+                  Fares: {
+                    Mdr: 3,
+                    Fee: 50,
+                  },
                 },
-              }],
+              ],
             },
           })
           .reply(200);
@@ -141,10 +145,7 @@ describe('Cielo API Wrapper', () => {
 
         let secondCallPromise = cielo.creditCards.cancelSale(params);
 
-        const promises = [
-          firstCallPromise,
-          secondCallPromise,
-        ];
+        const promises = [firstCallPromise, secondCallPromise];
 
         return Promise.all(promises).then(() => {
           expect(firstScope.isDone()).toBe(true);
@@ -155,7 +156,7 @@ describe('Cielo API Wrapper', () => {
 
     describe('cielo.consulting', () => {
       it('sale: returns a rejected Promise if neither paymentId nor merchantOrderId are passed', () => {
-        return cielo.consulting.sale({}).catch((error) => {
+        return cielo.consulting.sale({}).catch(error => {
           expect(error).toBeDefined();
           expect(error.message).toEqual('Either paymentId or merchantOrderId must be passed');
         });

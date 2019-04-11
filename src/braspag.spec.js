@@ -2,7 +2,6 @@ const nock = require('nock');
 const axios = require('axios');
 const httpAdapter = require('axios/lib/adapters/http');
 
-const cieloFactory = require('./cielo');
 const braspagFactory = require('./braspag');
 
 const host = 'http://localhost';
@@ -56,14 +55,11 @@ describe('Braspag Middleware', () => {
     nock('https://authsandbox.braspag.com.br')
       .matchHeader('content-type', 'application/x-www-form-urlencoded')
       .post('/oauth2/token', { grant_type: 'client_credentials' })
-      .reply(200, { access_token: 'oktoken12312412thisisookey102mv30m' })
+      .reply(200, { access_token: 'oktoken12312412thisisookey102mv30m' });
 
     const replyHandler = jest.fn(function() {
       if (this.req.headers.authorization === 'Bearer 1omg3om23otoken103mg0mgblablablaogm2o3mog') {
-        return [
-          401,
-          [{ Code: 238, Message: 'This Token is invalid ' }],
-        ];
+        return [401, [{ Code: 238, Message: 'This Token is invalid ' }]];
       }
 
       return [200, {}];
@@ -78,9 +74,12 @@ describe('Braspag Middleware', () => {
     // calls the endpoint once, gets an error
     const wrapperAxiosInstance = axios.create({ baseURL: 'https://myapi.com.br' });
     const someWrapper = {
-      use: (middleware) => {
-        wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor)
-        wrapperAxiosInstance.interceptors.response.use(middleware.responseInterceptor, middleware.responseErrorInterceptor);
+      use: middleware => {
+        wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor);
+        wrapperAxiosInstance.interceptors.response.use(
+          middleware.responseInterceptor,
+          middleware.responseErrorInterceptor,
+        );
       },
       doSomething: jest.fn(() => wrapperAxiosInstance.post('/endpoint', { some_data: 'blablabla' })),
     };
@@ -89,7 +88,7 @@ describe('Braspag Middleware', () => {
 
     someWrapper.use(braspag);
 
-    return someWrapper.doSomething().then((data) => {
+    return someWrapper.doSomething().then(data => {
       expect(data).toBeDefined();
       expect(replyHandler).toHaveBeenCalledTimes(2);
       expect(apiNock.isDone()).toBe(true);
@@ -119,11 +118,12 @@ describe('Braspag Middleware', () => {
 
       const someWrapper = {
         use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
-        doSomething: () => wrapperAxiosInstance.post('/endpoint', {
-          Payment: {
-            Type: 'CreditCard',
-          },
-        }),
+        doSomething: () =>
+          wrapperAxiosInstance.post('/endpoint', {
+            Payment: {
+              Type: 'CreditCard',
+            },
+          }),
       };
 
       someWrapper.use(braspag);
@@ -140,11 +140,12 @@ describe('Braspag Middleware', () => {
 
       const someWrapper = {
         use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
-        doSomething: () => wrapperAxiosInstance.post('/endpoint', {
-          Payment: {
-            Type: 'DebitCard',
-          },
-        }),
+        doSomething: () =>
+          wrapperAxiosInstance.post('/endpoint', {
+            Payment: {
+              Type: 'DebitCard',
+            },
+          }),
       };
 
       someWrapper.use(braspag);
@@ -157,14 +158,15 @@ describe('Braspag Middleware', () => {
     it('throws an error if the split config is not passed for a partial cancellation', () => {
       const someWrapper = {
         use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
-        doSomething: () => wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
-          amount: 1500,
-        }),
+        doSomething: () =>
+          wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
+            amount: 1500,
+          }),
       };
 
       someWrapper.use(braspag);
 
-      return someWrapper.doSomething().catch((error) => {
+      return someWrapper.doSomething().catch(error => {
         expect(error).toBeDefined();
         expect(error.message).toEqual('The split config is needed for partial cancellations');
       });
@@ -173,51 +175,64 @@ describe('Braspag Middleware', () => {
     it('throws an error if the sum of the amounts in each split object is different than the amount in the querystring', () => {
       const someWrapper = {
         use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
-        doSomething: () => wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
-          amount: 1500,
-          split: [{
-            amount: 500,
-            merchantId: '01234',
-          }, {
-            amount: 200,
-            merchantId: '56789',
-          }],
-        }),
+        doSomething: () =>
+          wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
+            amount: 1500,
+            split: [
+              {
+                amount: 500,
+                merchantId: '01234',
+              },
+              {
+                amount: 200,
+                merchantId: '56789',
+              },
+            ],
+          }),
       };
 
       someWrapper.use(braspag);
 
-      return someWrapper.doSomething().catch((error) => {
+      return someWrapper.doSomething().catch(error => {
         expect(error).toBeDefined();
-        expect(error.message).toEqual('The sum of amounts in each split configuration must equal the amount in the querystring');
+        expect(error.message).toEqual(
+          'The sum of amounts in each split configuration must equal the amount in the querystring',
+        );
       });
     });
 
     it('changes body data when partially cancelling a purchase', () => {
       const scope = nock('https://myapi.com.br')
         .put('/sales/0123456789/void?amount=1500', {
-          VoidSplitPayments: [{
-            SubordinateMerchantId: '01234',
-            VoidedAmount: 1200,
-          }, {
-            SubordinateMerchantId: '56789',
-            VoidedAmount: 300,
-          }],
+          VoidSplitPayments: [
+            {
+              SubordinateMerchantId: '01234',
+              VoidedAmount: 1200,
+            },
+            {
+              SubordinateMerchantId: '56789',
+              VoidedAmount: 300,
+            },
+          ],
         })
         .reply(200);
 
       const someWrapper = {
         use: middleware => wrapperAxiosInstance.interceptors.request.use(middleware.requestInterceptor),
-        doSomething: () => wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
-          amount: 1500,
-          split: [{
-            amount: 1200,
-            merchantId: '01234',
-          }, {
-            amount: 300,
-            merchantId: '56789',
-          }],
-        }),
+        doSomething: () =>
+          wrapperAxiosInstance.put('/sales/0123456789/void?amount=1500', {
+            amount: 1500,
+            split: [
+              {
+                amount: 1200,
+                merchantId: '01234',
+              },
+              {
+                amount: 300,
+                merchantId: '56789',
+              },
+            ],
+          }),
       };
 
       someWrapper.use(braspag);

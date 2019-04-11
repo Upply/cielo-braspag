@@ -9,7 +9,6 @@ const host = 'http://localhost';
 axios.defaults.host = host;
 axios.defaults.adapter = httpAdapter;
 
-
 describe('Integration tests Cielo - Braspag', () => {
   it('calls cielo.payWithToken and braspag modifies the request headers and body', () => {
     nock('https://authsandbox.braspag.com.br')
@@ -40,7 +39,7 @@ describe('Integration tests Cielo - Braspag', () => {
       returnUrl: 'http://google.com',
       cardToken: '0e310ad0-622e-4374-92bd-3ed17f1d6709',
       cvv: '456',
-      brand: 'Master'
+      brand: 'Master',
     };
 
     const scope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
@@ -97,26 +96,32 @@ describe('Integration tests Cielo - Braspag', () => {
       paymentId: '0123456789',
       amount: 1500,
       data: {
-        split: [{
-          amount: 1200,
-          merchantId: '01234',
-        }, {
-          amount: 300,
-          merchantId: '56789',
-        }],
+        split: [
+          {
+            amount: 1200,
+            merchantId: '01234',
+          },
+          {
+            amount: 300,
+            merchantId: '56789',
+          },
+        ],
       },
     };
 
     const scope = nock('https://apisandbox.cieloecommerce.cielo.com.br')
       .matchHeader('Authorization', 'Bearer 1omg3om23otoken103mg0mgblablablaogm2o3mog')
       .put('/1/sales/0123456789/void?amount=1500', {
-        VoidSplitPayments: [{
-          SubordinateMerchantId: '01234',
-          VoidedAmount: 1200,
-        }, {
-          SubordinateMerchantId: '56789',
-          VoidedAmount: 300,
-        }],
+        VoidSplitPayments: [
+          {
+            SubordinateMerchantId: '01234',
+            VoidedAmount: 1200,
+          },
+          {
+            SubordinateMerchantId: '56789',
+            VoidedAmount: 300,
+          },
+        ],
       })
       .reply(200);
 
