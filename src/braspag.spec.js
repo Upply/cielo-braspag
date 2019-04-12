@@ -242,4 +242,57 @@ describe('Braspag Middleware', () => {
       });
     });
   });
+
+  describe('financialAgenda', () => {
+    it('checkAdjustment: sends a get request to fetch adjusts for transaction', async () => {
+      const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
+
+      nock('https://authsandbox.braspag.com.br')
+        .matchHeader('content-type', 'application/x-www-form-urlencoded')
+        .post('/oauth2/token', { grant_type: 'client_credentials' })
+        .reply(200, { access_token: '123x123x123' });
+
+      const transactionId = '12345';
+      const scope = nock('https://splitsandbox.braspag.com.br')
+        .get(`/adjustment-api/adjustments/${transactionId}`)
+        .matchHeader('authorization', `Bearer 123x123x123`)
+        .reply(200);
+
+      return braspag.financialAgenda.getAdjustment(transactionId).then(() => expect(scope.isDone()).toBe(true));
+    });
+
+    it('adjustTransaction: sends a post request to adjust a transaction', () => {
+      const braspag = braspagFactory({ clientId: 'id', clientSecret: 'secret', sandbox: true });
+
+      nock('https://authsandbox.braspag.com.br')
+        .matchHeader('content-type', 'application/x-www-form-urlencoded')
+        .post('/oauth2/token', { grant_type: 'client_credentials' })
+        .reply(200, { access_token: '123x123x123' });
+
+      const transactionId = '12345';
+
+      const scope = nock('https://splitsandbox.braspag.com.br')
+        .post(`/adjustment-api/adjustments/`, {
+          merchantIdToDebit: 'EA4DB25A-F981-4849-87FF-026897E006C6',
+          merchantIdToCredit: '44F68284-27CF-43CB-9D14-1B1EE3F36838',
+          forecastedDate: '2018-09-17',
+          amount: 1200,
+          description: 'Lorem Ipsum Dolor Sit Amet',
+          transactionId,
+        })
+        .matchHeader('authorization', `Bearer 123x123x123`)
+        .reply(200);
+
+      const params = {
+        merchantIdToDebit: 'EA4DB25A-F981-4849-87FF-026897E006C6',
+        merchantIdToCredit: '44F68284-27CF-43CB-9D14-1B1EE3F36838',
+        adjustDate: new Date(2018, 8, 17),
+        amount: 1200,
+        description: 'Lorem Ipsum Dolor Sit Amet',
+        transactionId,
+      };
+
+      return braspag.financialAgenda.adjustTransaction(params).then(() => expect(scope.isDone()).toBe(true));
+    });
+  });
 });

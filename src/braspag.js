@@ -10,6 +10,7 @@ const BRASPAG_PRODUCTION_OAUTH_URL = 'https://auth.braspag.com.br';
 const BRASPAG_PRODUCTION_SPLIT_URL = 'https://split.braspag.com.br';
 
 let oauth2ServerInstance = null;
+let splitInstance = null;
 let token = null;
 
 module.exports = config => {
@@ -23,6 +24,12 @@ module.exports = config => {
         'content-type': 'application/x-www-form-urlencoded',
         Authorization: `Basic ${encodedAuth}`,
       },
+    });
+
+  splitInstance =
+    splitInstance ||
+    axios.create({
+      baseURL: config.sandbox ? BRASPAG_SANDBOX_SPLIT_URL : BRASPAG_PRODUCTION_SPLIT_URL,
     });
 
   const renewToken = () =>
@@ -98,5 +105,93 @@ module.exports = config => {
 
       return Promise.reject(error);
     },
+    financialAgenda: {
+      /**
+       * Gets information of the adjustments for the transaction specified
+       * @see https://braspag.github.io//manual/split-pagamentos-braspag#ajustes
+       * @param {string} transactionId The transaction id
+       */
+      async getAdjustment(transactionId) {
+        if (!transactionId) {
+          throw new Error('The parameter transactionId is required');
+        }
+
+        await renewToken();
+
+        return splitInstance.get(`/adjustment-api/adjustments/${transactionId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      },
+      /**
+       * @typedef {Object} AdjustmentParams
+       * @property {string} merchantIdToDebit The merchant id from which the money will be taken
+       * @property {string} merchantIdToCredit The merchant id that will receive the money
+       * @property {Date} adjustDate The date of the adjustment
+       * @property {number} amount The amount of the adjustment
+       * @property {string} transactionId The id of the transaction that will be adjusted
+       */
+
+      /**
+       * Adjusts a transaction
+       * @see https://braspag.github.io//manual/split-pagamentos-braspag#ajustes
+       * @param {AdjustmentParams} params The parameters of the adjustment
+       */
+      async adjustTransaction(params = {}) {
+        const { merchantIdToDebit, merchantIdToCredit, adjustDate, amount, description, transactionId } = params;
+
+        if (!merchantIdToDebit) {
+          throw new Error('The parameter "merchantIdToDebit" is required');
+        }
+
+        if (!merchantIdToCredit) {
+          throw new Error('The parameter "merchantIdToCredit" is required');
+        }
+
+        if (!adjustDate) {
+          throw new Error('The parameter "adjustDate" is required');
+        }
+
+        if (!amount) {
+          throw new Error('The parameter "amount" is required');
+        }
+
+        if (!transactionId) {
+          throw new Error('The parameter "transactionId" is required');
+        }
+
+        await renewToken();
+
+        return splitInstance.post(
+          `/adjustment-api/adjustments/`,
+          {
+            merchantIdToDebit,
+            merchantIdToCredit,
+            forecastedDate: formatDate(adjustDate),
+            amount,
+            description,
+            transactionId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+      },
+    },
   };
 };
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = addZero(date.getMonth() + 1);
+  const day = addZero(date.getDate());
+
+  return `${year}-${month}-${day}`;
+}
+
+function addZero(number) {
+  return number < 10 ? `0${number}` : number;
+}
