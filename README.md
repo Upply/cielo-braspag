@@ -115,7 +115,7 @@ cielo.cards.tokenizeCard(card, [fraudAnalysisData]);
 const token = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
 
 // GET para /1/card/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-cielo.cards.tokenizeCard(card);
+cielo.cards.getCard(token);
 ```
 
 #### [Criando uma venda com cartão tokenizado](https://developercielo.github.io/manual/cielo-ecommerce#criando-uma-venda-com-cart%C3%A3o-tokenizado)
